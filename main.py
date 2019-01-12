@@ -28,6 +28,28 @@ class DataManager:
 					self.data.append(row)
 
 
+class AnswerBuilder:
+	""" Builds answer from given data. """
+
+	def __init__(self):
+		""" Initialize empty answer. """
+		self.types = []
+
+	def isNotEmptyAnswer(self):
+		""" Checks are there any types already. """
+		if len(self.types) is 0:
+			return False
+		return True
+
+	def clearTypes(self):
+		""" Delete all stored types from answer builder. """
+		self.types.clear()
+
+	def addType(self, type):
+		""" Adds type to answer builder. """
+		self.types.append(type)
+
+
 class Application(Frame):
 	""" A GUI application. """
 
@@ -39,6 +61,7 @@ class Application(Frame):
 		self.gameTypesCheckDict = dict.fromkeys(self.dataManager.nameRow)
 		del self.gameTypesCheckDict[self.dataManager.nameRow[0]]
 		self.create_widgets()
+		self.answerBuilder = AnswerBuilder()
 		#self.dataManager.createFile()
 
 
@@ -63,17 +86,19 @@ class Application(Frame):
 		self.answer.grid(row = r, columnspan=4, pady = 12)
 
 	def submit(self):
-		f = False
+		""" Action on 'Advise' button. """
+		self.answerBuilder.clearTypes()
 		for i in self.gameTypesCheckDict:
 			if self.gameTypesCheckDict[i].get():
-				f = True
-		if not f:
-			self.showMessage("Title", "Fuck you!")
-		else:
+				self.answerBuilder.addType(i)
+		if self.answerBuilder.isNotEmptyAnswer():
 			self.answer.delete(1.0, END)
 			self.answer.insert(INSERT, self.dataManager.data)
+		else:
+			self.showMessage("Title", "Fuck you!")
 
 	def showMessage(self, title, message):
+		""" Creates messageBox with given title and message. """
 		messagebox.showinfo(title, message)
 
 
