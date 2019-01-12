@@ -49,6 +49,29 @@ class AnswerBuilder:
 		""" Adds type to answer builder. """
 		self.types.append(type)
 
+	def getAnswer(self, dataManager):
+		""" Create and return answer. """
+		typesNums = []
+		for i in range(len(dataManager.nameRow)):
+			if dataManager.nameRow[i] in self.types:
+				typesNums.append(i)
+		top = {}
+		for row in dataManager.data:
+			if len(row) is 0:
+				continue
+			p = 0
+			for i in range(1, len(row)):
+				if i in typesNums:
+					p+=int(row[i])
+			top[row[0]] = p
+		top_sorted_values = sorted(top.items(), key=lambda kv: kv[1], reverse=True)
+		result = ""
+		for i in range(0, len(top_sorted_values)):
+			if top_sorted_values[i][1] is len(typesNums):
+				break
+			result += str(i+1) + ". " + top_sorted_values[i][0] + "\t\t\t\t\t(" + str(top_sorted_values[i][1]) + "p)" + "\n"
+		return result
+
 
 class Application(Frame):
 	""" A GUI application. """
@@ -81,7 +104,7 @@ class Application(Frame):
 		self.submit = Button(self, text = "Advise", command = self.submit)
 		r+=1
 		self.submit.grid(row = r, columnspan=4, pady= 8)
-		self.answer = scrolledtext.ScrolledText(self, width=40, height=15)
+		self.answer = scrolledtext.ScrolledText(self, width=45, height=15)
 		r+=1
 		self.answer.grid(row = r, columnspan=4, pady = 12)
 
@@ -93,7 +116,7 @@ class Application(Frame):
 				self.answerBuilder.addType(i)
 		if self.answerBuilder.isNotEmptyAnswer():
 			self.answer.delete(1.0, END)
-			self.answer.insert(INSERT, self.dataManager.data)
+			self.answer.insert(INSERT, self.answerBuilder.getAnswer(self.dataManager))
 		else:
 			self.showMessage("Title", "Fuck you!")
 
