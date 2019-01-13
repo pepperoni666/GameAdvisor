@@ -49,7 +49,7 @@ class AnswerBuilder:
 		""" Adds type to answer builder. """
 		self.types.append(type)
 
-	def getAnswer(self, dataManager):
+	def getAnswer(self, dataManager, flag):
 		""" Create and return answer. """
 		typesNums = []
 		for i in range(len(dataManager.nameRow)):
@@ -60,10 +60,15 @@ class AnswerBuilder:
 			if len(row) is 0:
 				continue
 			p = 0
+			addRow = True
 			for i in range(1, len(row)):
 				if i in typesNums:
+					if flag == "and":
+						if int(row[i]) is 1:
+							addRow = False
 					p+=int(row[i])
-			top[row[0]] = p
+			if addRow:
+				top[row[0]] = p
 		top_sorted_values = sorted(top.items(), key=lambda kv: kv[1], reverse=True)
 		result = ""
 		for i in range(0, len(top_sorted_values)):
@@ -101,7 +106,14 @@ class Application(Frame):
 				r=0
 			r+=1
 			Checkbutton(self, text = i, font=("Arial", 11), variable = self.gameTypesCheckDict[i]).grid(row = r, column = c, sticky = W, padx=9)
-		self.submit = Button(self, text = "Advise", command = self.submit)
+		self.radioSelected = StringVar()
+		self.radioSelected.set("or")
+		r+=1
+		self.radioAnd = Radiobutton(self,text='AND', indicatoron = 0, width = 10, value="and", variable=self.radioSelected)
+		self.radioAnd.grid(row = r, column = 1, sticky = E, pady= 8)
+		self.radioOr = Radiobutton(self,text='OR', indicatoron = 0, width = 10, value="or", variable=self.radioSelected)
+		self.radioOr.grid(row = r, column = 2, sticky = W, pady= 8)
+		self.submit = Button(self, text = "Advise", font=("Arial Bold", 12), width = 20, command = self.submit)
 		r+=1
 		self.submit.grid(row = r, columnspan=4, pady= 8)
 		self.answer = scrolledtext.ScrolledText(self, width=45, height=15)
@@ -116,7 +128,7 @@ class Application(Frame):
 				self.answerBuilder.addType(i)
 		if self.answerBuilder.isNotEmptyAnswer():
 			self.answer.delete(1.0, END)
-			self.answer.insert(INSERT, self.answerBuilder.getAnswer(self.dataManager))
+			self.answer.insert(INSERT, self.answerBuilder.getAnswer(self.dataManager, self.radioSelected.get()))
 		else:
 			self.showMessage("Title", "Fuck you!")
 
@@ -129,7 +141,7 @@ window = Tk()
  
 window.title("Game Advisor")
 
-window.geometry('450x440')
+window.geometry('450x480')
 
 app = Application(window)
 
