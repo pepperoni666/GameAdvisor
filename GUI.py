@@ -106,6 +106,8 @@ class Application(Tk):
 
 	def addItem(self):
 		""" Add new game to data file"""
+		if len(self.newGameName.get()) < 1:
+			return
 		newItem = []
 		newItem.append(self.newGameName.get())
 		for i in self.combobox:
@@ -127,6 +129,8 @@ class Application(Tk):
 
 	def removeSelected(self):
 		""" Remove selected game from data file. """
+		if len(self.gameList.curselection()) < 1:
+			return
 		for i in self.gameList.curselection():
 			del self.dataManager.data[i]
 		self.dataManager.updateDataFile()
@@ -146,6 +150,8 @@ class Application(Tk):
 
 	def editSelected(self):
 		""" Edit selected game. """
+		if len(self.gameList.curselection()) < 1:
+			return
 		self.selectedEditIndex = self.gameList.curselection()[0]
 		self.editWindow = Tk()
 		self.editWindow.title("Edit game")
@@ -171,6 +177,8 @@ class Application(Tk):
 
 	def saveChanges(self):
 		""" Save changes to data file. """
+		if len(self.newGameName.get()) < 1:
+			return
 		self.dataManager.data[self.selectedEditIndex][0] = self.newGameName.get()
 		j = 1
 		for i in self.combobox:

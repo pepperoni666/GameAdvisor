@@ -1,3 +1,4 @@
+from pathlib import Path
 import csv
 
 class DataManager:
@@ -6,6 +7,7 @@ class DataManager:
 	def __init__(self, filename):
 		""" Take name of the file. """
 		self.filename = filename + ".csv"
+		self.path = Path(self.filename)
 		self.nameRow = ["Game name", "MMO", "Simulator", "Adventure", "RTS", "Puzzle", "Action", "Stealth", "Combat", "FPS", "Sport", "RPG", "Education"]
 		self.data = []
 		self.readData()
@@ -19,6 +21,8 @@ class DataManager:
 
 	def addGameItem(self, item):
 		""" Adding item to data file. """
+		if not self.path.is_file():
+			self.createFile()
 		with open(self.filename, "a") as csvfile:
 			writer = csv.writer(csvfile)
 			writer.writerow(item)
@@ -26,6 +30,8 @@ class DataManager:
 
 	def updateDataFile(self):
 		""" Removing item from data file. """
+		if not self.path.is_file():
+			self.createFile()
 		with open(self.filename, "w") as csvfile:
 			writer = csv.writer(csvfile)
 			writer.writerow(self.nameRow)
@@ -33,6 +39,8 @@ class DataManager:
 
 	def readData(self):
 		""" Read data from file. """
+		if not self.path.is_file():
+			return
 		self.data.clear()
 		with open(self.filename) as csvfile:
 			reader = csv.reader(csvfile)
